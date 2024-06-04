@@ -1,0 +1,57 @@
+
+<!DOCTYPE html>
+<html lang="en">
+
+{% load static %}
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{% static  'css/pico-main/css/pico.min.css' %}" crossorigin="anonymous">
+    
+    <title>PokeApp</title>
+</head>
+<body>
+
+    <div class="container-fluid" id="nav">
+        <nav>
+            <ul>
+                <li><strong>PokeApp</strong></li>
+            </ul>
+            <ul>
+                <li>
+                <button class="secondary">Registrame</button>
+                </li>
+            </ul>
+        </nav>
+    </div>
+    
+    <div class="container" id="pokedex-container">
+
+
+        <div class="container" id="pokedex-info">
+
+            {% include "search_pk.html" %}
+    
+            {% if error_message %}
+                <div class="container" id="error_pk_busqueda">
+                    <p class="error">{{ error_message }}</p>
+                </div>
+            {% endif %}
+    
+            {% if pokemon_data %}
+                <div class="container" id="pokemon_view_info">
+                    <h2>{{ pokemon_data.name|title }}</h2>
+                    <img src="{{ pokemon_data.image }}" alt="{{ pokemon_data.name }}">
+                    <p><strong>Mejor Atributo:</strong> {{ pokemon_data.best_stat }} ({{ pokemon_data.best_stat_value }})</p>
+                    <p><strong>Descripción:</strong> {{ pokemon_data.description }}</p>
+                    <p><strong>Valores Posibles:</strong> {{ pokemon_data.possible_values }}</p>
+                </div>
+            {% endif %}
+        </div>
+
+    </div>
+
+
+</body>
+</html>
