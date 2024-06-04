@@ -60,6 +60,11 @@
                     <input type="hidden" name="query" value="{{ pokemon_data.name }}">
                     <button type="submit">Ver Evoluciones</button>
                 </form>
+
+                <form action="{% url 'pokemon_habilidades' %}" method="get">
+                    <input type="hidden" name="query" value="{{ pokemon_data.name }}">
+                    <button type="submit">Ver Habilidades</button>
+                </form>
                 
             </div>
 

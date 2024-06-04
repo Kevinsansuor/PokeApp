@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <!-- habilidades.html -->
+    
+    <h1>Habilidades de {{ query }}</h1>
+
+    {% if error_message %}
+    <p>{{ error_message }}</p>
+
+    {% else %}
+    
+    <div>
+      <h2>Habilidad:</h2>
+      <p>{{ abilities_data.primary_ability }}</p>
+    </div>
+    
+    <div>
+      <h2>Habilidad oculta:</h2>
+      <ul>
+        {% for ability in abilities_data.hidden_abilities %}
+          <li>{{ ability }}</li>
+        {% endfor %}
+      </ul>
+    </div>
+
+    {% endif %}
+</body>
+</html>

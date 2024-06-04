@@ -14,9 +14,12 @@ def pokemon_search(request):
     logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(message)s')
 
     if query:
-        # Perform a case-insensitive search on both the name and unique_id fields
+        #Perform a case-insensitive search on both the name and unique_id fields
         pokemon_obj = Pokemon_main.objects.filter(
             Q(name__iexact=query) | Q(unique_id=query)).first()
+        
+        
+        
 
 
         if pokemon_obj:
@@ -224,6 +227,38 @@ def fetch_pokemon_image(pokemon_name):
     if response.status_code == 200:
         data = response.json()
         return data['sprites']['front_default']
+    return None
+
+def pokemon_habilidades(request):
+    # Retrieve the query parameter from the request
+    query = request.GET.get('query')
+
+    # Perform any necessary data retrieval or processing here
+    # For example, you can fetch evolution data for the given query
+    abilities_data = fetch_abilities_data(query)
+
+    # Pass the necessary data to the template
+    context = {
+        'query': query,
+        'abilities_data': abilities_data,
+        # Add any other context variables you need
+    }
+
+    # Render the evoluciones.html template with the context data
+    return render(request, 'habilidades.html', context)
+
+def fetch_abilities_data(pokemon_name):
+    response = requests.get(f'https://pokeapi.co/api/v2/pokemon/{pokemon_name.lower()}')
+    if response.status_code == 200:
+        data = response.json()
+        abilities = []
+        for ability_entry in data['abilities']:
+            ability_name = ability_entry['ability']['name'].capitalize()
+            abilities.append(ability_name)
+        return {
+            'primary_ability': abilities[0],
+            'hidden_abilities': abilities[1:],
+        }
     return None
 
 
