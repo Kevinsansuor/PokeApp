@@ -29,3 +29,13 @@ class Pokemon_main_evolutions(models.Model):
     
     def __str__(self):
         return self.evolutions
+
+class Pokemon_main_abilities(models.Model):
+    name = models.CharField(max_length=100)
+    abilities = models.CharField(max_length=255)
+    
+    class Meta:
+        unique_together = ('abilities', 'name')
+    
+    def __str__(self):
+        return self.name
