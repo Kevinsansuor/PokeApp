@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PokeApp - Especie</title>
+</head>
+<body>
+    {% if pokemon_data %}
+        <h1>{{ pokemon_data.name }}</h1>
+        <img src="{{ pokemon_data.image }}" alt="{{ pokemon_data.name }}">
+        <p>Especie: {{ pokemon_data.species }}</p>
+    {% else %}
+        <p>No se encontró el Pokémon.</p>
+    {% endif %}
+</body>
+</html>

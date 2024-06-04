@@ -46,8 +46,24 @@
                     <p><strong>Mejor Atributo:</strong> {{ pokemon_data.best_stat }} ({{ pokemon_data.best_stat_value }})</p>
                     <p><strong>Descripción:</strong> {{ pokemon_data.description }}</p>
                     <p><strong>Valores Posibles:</strong> {{ pokemon_data.possible_values }}</p>
+                    <p>Especies: {{ pokemon_data.species }}</p>
                 </div>
             {% endif %}
+
+            <div class="container-fluid" id="botones_pk">
+                <div role="group">
+                    <button>Especies</button>
+                    <button>Evoluciones</button>
+                    <button>Habilidades</button>
+                  </div>
+
+                <form action="{% url 'pokemon_species' %}" method="get">
+                    <input type="hidden" name="query" value="{{ pokemon_data.name }}">
+                    <button type="submit">Ver Especie</button>
+                </form>
+                
+            </div>
+
         </div>
 
     </div>
