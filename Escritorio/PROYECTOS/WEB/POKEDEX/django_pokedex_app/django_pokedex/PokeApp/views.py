@@ -1,8 +1,9 @@
 # views.py
 
+from django.db import IntegrityError
 from django.shortcuts import render
 import requests
-from .models import Pokemon_main, Pokemon_main_especies
+from .models import Pokemon_main, Pokemon_main_especies, Pokemon_main_evolutions
 import logging
 from django.db.models import Q
 
@@ -108,8 +109,6 @@ def get_pokemon_possible_values(pokemon_id):
         return ', '.join(map(str, stats))
     return 'Possible values not available.'
 
-
-
 def get_species_description(species_data):
     for flavor_text in species_data['flavor_text_entries']:
         if flavor_text['language']['name'] == 'es':
@@ -136,7 +135,7 @@ def pokemon_species(request):
             pokemon_data = fetch_pokemon_data_from_api(query)
             if pokemon_data:
                 # Guardar los datos del Pokémon en la base de datos
-                save_pokemon_data_to_database(pokemon_data)
+                save_pokemon_species_to_database(pokemon_data)
 
     return render(request, 'species.html', {'pokemon_data': pokemon_data})
 
@@ -149,14 +148,88 @@ def fetch_pokemon_data_from_api(pokemon_name):
         if species_response.status_code == 200:
             species_data = species_response.json()
             species_name = None
-            for flavor_text in species_data['flavor_text_entries']:
+            for flavor_text in species_data['genera']:
                 if flavor_text['language']['name'] == 'es':
-                    species_name = flavor_text['flavor_text']
+                    species_name = flavor_text['genus']
                     break
             if species_name:
                 return {'name': pokemon_name, 'species': species_name, 'image': data['sprites']['front_default']}
     return None
 
-def save_pokemon_data_to_database(pokemon_data):
-    new_pokemon = Pokemon_main_especies(name=pokemon_data['name'], species=pokemon_data['species'])
-    new_pokemon.save()
+def save_pokemon_species_to_database(pokemon_data):
+    try:
+        Pokemon_main_especies.objects.create(name=pokemon_data['name'], species=pokemon_data['species'])
+    except IntegrityError:
+        # Registro ya existe, manejar la excepción adecuadamente o simplemente ignorarla
+        pass
+
+
+def pokemon_evolutions(request):
+    # Retrieve the query parameter from the request
+    query = request.GET.get('query')
+
+    # Perform any necessary data retrieval or processing here
+    # For example, you can fetch evolution data for the given query
+    evolution_data = fetch_evolution_data(query)
+
+    # Pass the necessary data to the template
+    context = {
+        'query': query,
+        'evolution_data': evolution_data,
+        # Add any other context variables you need
+    }
+
+    # Render the evoluciones.html template with the context data
+    return render(request, 'evoluciones.html', context)
+
+
+def fetch_evolution_data(pokemon_name):
+    response = requests.get(f'https://pokeapi.co/api/v2/pokemon-species/{pokemon_name.lower()}')
+    if response.status_code == 200:
+        data = response.json()
+        evolution_chain_url = data['evolution_chain']['url']
+        evolution_chain_response = requests.get(evolution_chain_url)
+        if evolution_chain_response.status_code == 200:
+            evolution_chain_data = evolution_chain_response.json()
+            evolution_data = parse_evolution_chain(evolution_chain_data)
+            return evolution_data
+    return None
+
+def parse_evolution_chain(evolution_chain_data):
+    evolution_data = []
+    chain = evolution_chain_data['chain']
+    
+    # Función recursiva para explorar todas las ramas de la cadena de evolución
+    def explore_chain(chain):
+        while chain:
+            evolution_details = chain['evolution_details'][0] if chain['evolution_details'] else None
+            if 'species' in chain:
+                pokemon_name = chain['species']['name'].capitalize()
+                pokemon_image = fetch_pokemon_image(chain['species']['name'])
+                evolution_data.append({
+                    'name': pokemon_name,
+                    'image': pokemon_image
+                })
+            if chain['evolves_to']:
+                for next_chain in chain['evolves_to']:
+                    explore_chain(next_chain)
+            chain = None  # Termina el bucle
+
+    explore_chain(chain)
+    return evolution_data
+
+
+def fetch_pokemon_image(pokemon_name):
+    response = requests.get(f'https://pokeapi.co/api/v2/pokemon/{pokemon_name.lower()}')
+    if response.status_code == 200:
+        data = response.json()
+        return data['sprites']['front_default']
+    return None
+
+
+
+
+
+
+
+

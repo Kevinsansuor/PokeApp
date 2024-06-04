@@ -18,5 +18,14 @@ class Pokemon_main_especies(models.Model):
     name = models.CharField(max_length=100)
     species = models.CharField(max_length=255)
     
+    class Meta:
+        unique_together = ('species', 'name')
+    
     def __str__(self):
         return self.name
+    
+class Pokemon_main_evolutions(models.Model):
+    evolutions = models.CharField(max_length=255)
+    
+    def __str__(self):
+        return self.evolutions

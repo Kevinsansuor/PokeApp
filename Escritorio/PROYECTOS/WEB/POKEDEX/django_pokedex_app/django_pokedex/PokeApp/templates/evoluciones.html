@@ -1,0 +1,30 @@
+<!-- evoluciones.html -->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pokémon Evoluciones</title>
+</head>
+<body>
+    <h1>Evoluciones de {{ query }}</h1>
+    {% if evolution_data %}
+        <ul>
+            {% for evolution in evolution_data %}
+                <li>
+                    <h2>{{ evolution.name }}</h2>
+                    {% if evolution.image %}
+                        <img src="{{ evolution.image }}" alt="{{ evolution.name }}">
+                    {% else %}
+                        <p>Imagen no disponible</p>
+                    {% endif %}
+                </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>No se encontraron datos de evolución para este Pokémon.</p>
+    {% endif %}
+</body>
+</html>
+    
