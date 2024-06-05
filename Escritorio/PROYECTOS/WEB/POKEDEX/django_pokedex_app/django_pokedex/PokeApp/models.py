@@ -2,6 +2,19 @@ from django.db import models
 
 # Create your models here.
 
+# models.py
+from django.db import models
+
+class Usuario(models.Model):
+    name = models.CharField(max_length=100)
+    email = models.EmailField(unique=True)
+    phone = models.CharField(max_length=10)
+    password = models.CharField(max_length=128)
+
+    def __str__(self):
+        return self.name
+
+
 class Pokemon_main(models.Model):
     name = models.CharField(max_length=100)
     unique_id = models.IntegerField(primary_key=True)

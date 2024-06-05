@@ -3,9 +3,28 @@
 from django.db import IntegrityError
 from django.shortcuts import render
 import requests
-from .models import Pokemon_main, Pokemon_main_especies, Pokemon_main_evolutions
+from .models import Pokemon_main, Pokemon_main_especies, Pokemon_main_evolutions, Usuario
+from .forms import RegistroForm
 import logging
 from django.db.models import Q
+
+from django import forms
+
+
+def register(request):
+    if request.method == 'POST':
+        form = RegistroForm(request.POST)
+        print(form)
+        if form.is_valid():
+            form.save()
+            return render(request, 'habilidades.html')
+    else:
+        form = RegistroForm()
+    return render(request, 'registerform.html', {'form': form})
+
+def verificar_registro(request):
+    usuarios = Usuario.objects.all()
+    return render(request, 'verificar_registro.html', {'usuarios': usuarios})
 
 def pokemon_search(request):
     query = request.GET.get('query')

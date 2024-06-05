@@ -13,6 +13,38 @@
 </head>
 <body>
 
+    <dialog id="modal-example">
+        <article>
+          <header>
+            <button
+              aria-label="Close"
+              rel="prev"
+              data-target="modal-example"
+              onclick="toggleModal(event)"
+            ></button>
+            <h3>Registro PokeApp</h3>
+          </header>
+          <p>
+            Regístrate en nuestra PokeApp
+          </p>
+
+          <div class="container-fluid">
+            {% include "registerform.html" %}
+          </div>
+
+          <footer>
+            <button
+              role="button"
+              class="secondary"
+              data-target="modal-example"
+              onclick="toggleModal(event)"
+            >
+              Cerrar registro</button
+            >
+          </footer>
+        </article>
+    </dialog>
+
     <div class="container-fluid" id="nav">
         <nav>
             <ul>
@@ -20,10 +52,14 @@
             </ul>
             <ul>
                 <li>
-                <button class="secondary">Registrame</button>
+                <button class="secondary" data-target="modal-example" onclick="toggleModal(event)">Registrarme</button>
                 </li>
             </ul>
         </nav>
+    </div>
+
+    <div class="container">
+        {% include "verificar_registro.html" %}
     </div>
     
     <div class="container" id="pokedex-container">
@@ -71,6 +107,13 @@
         </div>
 
     </div>
+
+    <center>
+        <img style="border: 0px solid; display: inline;" alt="contador de visitas" src="https://websmultimedia.com/contador-de-visitas.php?id=17249"></a>
+    </center>
+
+
+    <script src="{% static 'js/main.js' %}"></script>
 
 
 </body>
