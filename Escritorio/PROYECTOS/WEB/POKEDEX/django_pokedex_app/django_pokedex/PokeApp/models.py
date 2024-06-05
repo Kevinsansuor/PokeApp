@@ -13,6 +13,10 @@ class Usuario(models.Model):
 
     def __str__(self):
         return self.name
+    
+
+class PageView(models.Model):
+    view_count = models.IntegerField(default=0)
 
 
 class Pokemon_main(models.Model):

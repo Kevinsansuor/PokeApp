@@ -3,7 +3,7 @@
 from django.db import IntegrityError
 from django.shortcuts import redirect, render
 import requests
-from .models import Pokemon_main, Pokemon_main_especies, Pokemon_main_evolutions, Usuario
+from .models import Pokemon_main, Pokemon_main_especies, Pokemon_main_evolutions, Usuario, PageView
 import logging
 from django.db.models import Q
 from django.views.decorators.csrf import csrf_exempt
@@ -16,6 +16,8 @@ from django.shortcuts import render
 from django.http import HttpResponse
 from django.views.decorators.csrf import csrf_exempt
 
+
+
 @csrf_exempt
 def crear_usuario(request):
     if request.method == 'POST':
@@ -24,22 +26,32 @@ def crear_usuario(request):
         phone = request.POST.get('phone')
         password = request.POST.get('password')
 
-        try:
-            Usuario.objects.create(name=full_name, email=email, phone=phone, password=password)
-        except IntegrityError:
-            error_message = 'Usuario ya existe'
-            return render(request, 'index.html', {'error_message': error_message})
+        usuario, created = Usuario.objects.get_or_create(email=email)
+
+        # Update the fields of the Usuario object
+        usuario.name = full_name
+        usuario.phone = phone
+        usuario.password = password
+        usuario.save()
 
         return render(request, 'index.html', {'user_data': {
-            'full_name': full_name,
-            'email': email,
-            'phone': phone,
-            'password': password,
+            'full_name': usuario.name,
+            'email': usuario.email,
+            'phone': usuario.phone,
+            'password': usuario.password,
         }})
     else:
         return HttpResponse('Solicitud inválida')
 
 def pokemon_search(request):
+    
+    # Obtener el objeto de PageView (lo creamos si no existe)
+    page_view, created = PageView.objects.get_or_create(id=1)
+    
+    # Incrementar el contador
+    page_view.view_count += 1
+    page_view.save()
+    
     query = request.GET.get('query')
     pokemon_data = None
     error_message = None
@@ -92,7 +104,7 @@ def pokemon_search(request):
                 else:
                     error_message = f'Lo sentimos no hay coincidencias para el Pokemon: ', query
 
-    return render(request, 'index.html', {'pokemon_data': pokemon_data, 'error_message': error_message})
+    return render(request, 'index.html', {'pokemon_data': pokemon_data, 'error_message': error_message, 'view_count': page_view.view_count})
 
 def fetch_pokemon_data(pokemon_id):
     response = requests.get(f'https://pokeapi.co/api/v2/pokemon/{pokemon_id}')

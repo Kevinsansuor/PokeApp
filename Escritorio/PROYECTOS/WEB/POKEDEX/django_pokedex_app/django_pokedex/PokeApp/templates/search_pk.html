@@ -5,10 +5,20 @@
     <title>Buscador</title>
 </head>
 <body>
+
+    <script>
+        function clearHistory() {
+            window.history.pushState('', document.title, window.location.pathname);
+        }
+    </script>
+
     <h2>Buscar Pokemon</h2>
     <form method="get" action="">
         <input type="search" name="query" placeholder="Nombre o Id del Pokemon" required>
         <button type="submit" class="contrast">Buscar</button>
     </form>
+
+    
+
 </body>
 </html>

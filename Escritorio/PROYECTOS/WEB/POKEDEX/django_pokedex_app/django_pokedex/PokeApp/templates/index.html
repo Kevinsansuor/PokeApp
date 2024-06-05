@@ -82,6 +82,9 @@
 
         <div class="container" id="pokedex-info">
 
+            <h1>Contador de Visitas</h1>
+            <p>Esta página ha sido visitada {{ view_count }} veces.</p>
+
             {% include "search_pk.html" %}
     
             {% if error_message %}
@@ -156,8 +159,7 @@
         var fullName = document.getElementById('full_name');
         var email = document.getElementById('email');
         var phone = document.getElementById('phone');
-        var username = document.getElementById('username');
-        var password = document.getElementById('password');
+
 
         if (fullName.value === '' || email.value === '' || phone.value === '' || username.value === '' || password.value === '') {
             alert('Por favor, complete todos los campos.');
