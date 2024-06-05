@@ -9,11 +9,15 @@
 
     <h1>Verificar Registro</h1>
 
-    {% for usuario in usuarios %}
-    <p>Nombre: {{ usuario.name }}</p>
-    <p>Email: {{ usuario.email }}</p>
-    <p>Teléfono: {{ usuario.phone }}</p>
-    <p>Contraseña: {{ usuario.password }}</p>
-{% endfor %}
+    {% if user_data %}
+    <p>Nombre completo: {{ user_data.full_name }}</p>
+    <p>Correo electrónico: {{ user_data.email }}</p>
+    <p>Teléfono: {{ user_data.phone }}</p>
+    <p>Contraseña: {{ user_data.password }}</p>
+{% else %}
+    <p>No hay datos de usuario disponibles.</p>
+{% endif %}
+
+
 </body>
 </html>

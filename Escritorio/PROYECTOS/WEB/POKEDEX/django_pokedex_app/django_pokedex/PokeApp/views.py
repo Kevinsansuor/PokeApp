@@ -1,30 +1,43 @@
 # views.py
 
 from django.db import IntegrityError
-from django.shortcuts import render
+from django.shortcuts import redirect, render
 import requests
 from .models import Pokemon_main, Pokemon_main_especies, Pokemon_main_evolutions, Usuario
-from .forms import RegistroForm
 import logging
 from django.db.models import Q
+from django.views.decorators.csrf import csrf_exempt
+from django.http import HttpResponse
+
 
 from django import forms
+    
+from django.shortcuts import render
+from django.http import HttpResponse
+from django.views.decorators.csrf import csrf_exempt
 
-
-def register(request):
+@csrf_exempt
+def crear_usuario(request):
     if request.method == 'POST':
-        form = RegistroForm(request.POST)
-        print(form)
-        if form.is_valid():
-            form.save()
-            return render(request, 'habilidades.html')
-    else:
-        form = RegistroForm()
-    return render(request, 'registerform.html', {'form': form})
+        full_name = request.POST.get('full_name')
+        email = request.POST.get('email')
+        phone = request.POST.get('phone')
+        password = request.POST.get('password')
 
-def verificar_registro(request):
-    usuarios = Usuario.objects.all()
-    return render(request, 'verificar_registro.html', {'usuarios': usuarios})
+        try:
+            Usuario.objects.create(name=full_name, email=email, phone=phone, password=password)
+        except IntegrityError:
+            error_message = 'Usuario ya existe'
+            return render(request, 'index.html', {'error_message': error_message})
+
+        return render(request, 'index.html', {'user_data': {
+            'full_name': full_name,
+            'email': email,
+            'phone': phone,
+            'password': password,
+        }})
+    else:
+        return HttpResponse('Solicitud inválida')
 
 def pokemon_search(request):
     query = request.GET.get('query')
@@ -36,10 +49,6 @@ def pokemon_search(request):
         #Perform a case-insensitive search on both the name and unique_id fields
         pokemon_obj = Pokemon_main.objects.filter(
             Q(name__iexact=query) | Q(unique_id=query)).first()
-        
-        
-        
-
 
         if pokemon_obj:
             # If the Pokemon data exists, return it
