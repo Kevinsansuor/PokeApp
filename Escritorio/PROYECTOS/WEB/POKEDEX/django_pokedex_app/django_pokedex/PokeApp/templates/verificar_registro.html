@@ -13,21 +13,38 @@
         <span><button class="secondary" id="user_logout">Cerrar sesión</button></span>
     </div>
 {% else %}
-    <li>
-        <button class="secondary" data-target="modal-example" onclick="toggleModal(event)" title="No hay datos de registro" id="user_singup">Registrarme</button>
-    </li>
+    <div>
+        no hay registros
+    </div>
 {% endif %}
 
 <script>
     document.addEventListener('DOMContentLoaded', function() {
         // Obtener el valor del atributo data-user-data
-        const userInfoDiv = document.getElementById('user-info');
+        const userInfoDiv = document.getElementById('user_info');
         const userDataExists = userInfoDiv.getAttribute('data-user-data') === 'true';
 
-        // Ocultar el botón si userDataExists es true
+        // Ocultar el botón "Registrarme" si userDataExists es true
         if (userDataExists) {
-            const registroButton = document.getElementById('registro');
-            registroButton.style.display = 'none';
+            const signupButton = document.getElementById('user_signup');
+            if (signupButton) {
+                signupButton.style.display = 'none';
+            }
+        }
+
+        // Manejar el evento del botón "Cerrar sesión"
+        const logoutButton = document.getElementById('user_logout');
+        if (logoutButton) {
+            logoutButton.addEventListener('click', function() {
+                // Ocultar la información del usuario y mostrar el botón "Registrarme"
+                if (userInfoDiv) {
+                    userInfoDiv.style.display = 'none';
+                }
+                const signupButton = document.getElementById('user_signup');
+                if (signupButton) {
+                    signupButton.style.display = 'block';
+                }
+            });
         }
     });
 </script>

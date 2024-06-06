@@ -6,7 +6,6 @@ import requests
 from .models import Pokemon_main, Pokemon_main_especies, Pokemon_main_evolutions, Usuario, PageView
 import logging
 from django.db.models import Q
-from django.views.decorators.csrf import csrf_exempt
 from django.http import HttpResponse
 from django.views.decorators.csrf import csrf_protect
 from django.http import JsonResponse, HttpResponse
@@ -16,7 +15,6 @@ from django.core.validators import validate_email
 
 from django.shortcuts import render
 from django.http import HttpResponse
-from django.views.decorators.csrf import csrf_exempt
 
 
 
@@ -62,13 +60,10 @@ def crear_usuario(request):
 
 def pokemon_search(request):
 
-    user_data = request.session.pop('user_data', None)  # Recuperar y eliminar los datos de la sesión
-    message = request.session.pop('message', None)  # Recuperar y eliminar el mensaje de la sesión
+    user_data = request.session.pop('user_data', None)
+    message = request.session.pop('message', None)
     
-    # Obtener el objeto de PageView (lo creamos si no existe)
     page_view, created = PageView.objects.get_or_create(id=1)
-    
-    # Incrementar el contador
     page_view.view_count += 1
     page_view.save()
     
