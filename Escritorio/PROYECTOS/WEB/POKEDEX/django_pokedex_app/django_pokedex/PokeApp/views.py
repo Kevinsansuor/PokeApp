@@ -8,17 +8,19 @@ import logging
 from django.db.models import Q
 from django.views.decorators.csrf import csrf_exempt
 from django.http import HttpResponse
+from django.views.decorators.csrf import csrf_protect
+from django.http import JsonResponse, HttpResponse
+from django.contrib.auth.hashers import make_password
+from django.core.exceptions import ValidationError
+from django.core.validators import validate_email
 
-
-from django import forms
-    
 from django.shortcuts import render
 from django.http import HttpResponse
 from django.views.decorators.csrf import csrf_exempt
 
 
 
-@csrf_exempt
+@csrf_protect
 def crear_usuario(request):
     if request.method == 'POST':
         full_name = request.POST.get('full_name')
@@ -26,24 +28,42 @@ def crear_usuario(request):
         phone = request.POST.get('phone')
         password = request.POST.get('password')
 
-        usuario, created = Usuario.objects.get_or_create(email=email)
+        # Validación de datos
+        if not full_name or not email or not phone or not password:
+            return JsonResponse({'error': 'Todos los campos son obligatorios'}, status=400)
 
-        # Update the fields of the Usuario object
+        try:
+            validate_email(email)
+        except ValidationError:
+            return JsonResponse({'error': 'Correo electrónico inválido'}, status=400)
+
+        # Manejo de creación y actualización de usuario
+        usuario, created = Usuario.objects.get_or_create(email=email)
+        
         usuario.name = full_name
         usuario.phone = phone
-        usuario.password = password
+        usuario.password = make_password(password)
         usuario.save()
 
-        return render(request, 'index.html', {'user_data': {
+        user_data = {
             'full_name': usuario.name,
             'email': usuario.email,
             'phone': usuario.phone,
-            'password': usuario.password,
-        }})
+        }
+
+        # Almacenar los datos del usuario en la sesión
+        request.session['user_data'] = user_data
+        request.session['message'] = 'Usuario creado exitosamente' if created else 'Usuario actualizado exitosamente'
+
+        # Redirigir al usuario a la página de inicio
+        return redirect('pokemon_search')
     else:
-        return HttpResponse('Solicitud inválida')
+        return HttpResponse('Solicitud inválida', status=400)
 
 def pokemon_search(request):
+
+    user_data = request.session.pop('user_data', None)  # Recuperar y eliminar los datos de la sesión
+    message = request.session.pop('message', None)  # Recuperar y eliminar el mensaje de la sesión
     
     # Obtener el objeto de PageView (lo creamos si no existe)
     page_view, created = PageView.objects.get_or_create(id=1)
@@ -104,7 +124,7 @@ def pokemon_search(request):
                 else:
                     error_message = f'Lo sentimos no hay coincidencias para el Pokemon: ', query
 
-    return render(request, 'index.html', {'pokemon_data': pokemon_data, 'error_message': error_message, 'view_count': page_view.view_count})
+    return render(request, 'index.html', {'pokemon_data': pokemon_data, 'error_message': error_message, 'view_count': page_view.view_count, 'user_data': user_data, 'message': message})
 
 def fetch_pokemon_data(pokemon_id):
     response = requests.get(f'https://pokeapi.co/api/v2/pokemon/{pokemon_id}')

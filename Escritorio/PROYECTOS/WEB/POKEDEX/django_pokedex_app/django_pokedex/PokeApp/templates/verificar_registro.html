@@ -7,17 +7,30 @@
 </head>
 <body>
 
-    <h1>Verificar Registro</h1>
-
     {% if user_data %}
-    <p>Nombre completo: {{ user_data.full_name }}</p>
-    <p>Correo electrónico: {{ user_data.email }}</p>
-    <p>Teléfono: {{ user_data.phone }}</p>
-    <p>Contraseña: {{ user_data.password }}</p>
+    <div class="container-fluid" id="user_info" data-user-data="{% if user_data %}true{% else %}false{% endif %}">
+    Bienvenido: {{ user_data.full_name }}
+        <span><button class="secondary" id="user_logout">Cerrar sesión</button></span>
+    </div>
 {% else %}
-    <p>No hay datos de usuario disponibles.</p>
+    <li>
+        <button class="secondary" data-target="modal-example" onclick="toggleModal(event)" title="No hay datos de registro" id="user_singup">Registrarme</button>
+    </li>
 {% endif %}
 
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Obtener el valor del atributo data-user-data
+        const userInfoDiv = document.getElementById('user-info');
+        const userDataExists = userInfoDiv.getAttribute('data-user-data') === 'true';
+
+        // Ocultar el botón si userDataExists es true
+        if (userDataExists) {
+            const registroButton = document.getElementById('registro');
+            registroButton.style.display = 'none';
+        }
+    });
+</script>
 
 </body>
 </html>

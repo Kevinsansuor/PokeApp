@@ -66,16 +66,15 @@
                 <li><strong>PokeApp</strong></li>
             </ul>
             <ul>
+
                 <li>
-                <button class="secondary" data-target="modal-example" onclick="toggleModal(event)">Registrarme</button>
+                    {% include "verificar_registro.html" %}
                 </li>
+
             </ul>
         </nav>
     </div>
 
-    <div class="container">
-        {% include "verificar_registro.html" %}
-    </div>
     
     <div class="container" id="pokedex-container">
 
